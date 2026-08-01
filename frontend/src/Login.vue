@@ -9,6 +9,10 @@
         Veja momentos do dia a dia dos seus
         <span class="highlight">amigos próximos</span>.
       </h1>
+
+      <div class="hero-frame">
+        <img src="../assets/wallpaper/Copilot_20260718_101652.png" alt="Membros do clã reunidos em um banquete à luz de tochas" />
+      </div>
     </div>
 
     <!-- Painel direito -->
