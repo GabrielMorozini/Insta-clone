@@ -1,57 +1,50 @@
-import { reactive, ref } from 'vue'
-//import api from '@/services/api' // ajusta pro caminho real do teu cliente HTTP
+import { ref, computed } from 'vue';
 
-export default {
-  name: 'Login',
-  setup() {
-    const form = reactive({
-      identifier: '',
-      password: ''
-    })
+export function useLoginForm() {
+  const username = ref('');
+  const password = ref('');
+  const error = ref('');
+  const isSubmitting = ref(false);
+  const toastMessage = ref('');
 
-    const errors = reactive({
-      identifier: false,
-      password: false
-    })
+  const canSubmit = computed(
+    () => username.value.trim().length > 0 && password.value.length > 0 && !isSubmitting.value
+  );
 
-    const showPassword = ref(false)
-    const loading = ref(false)
-    const serverError = ref('')
+  function handleSubmit() {
+    error.value = '';
+    toastMessage.value = '';
 
-    function validate() {
-      errors.identifier = !form.identifier.trim()
-      errors.password = !form.password.trim()
-      return !errors.identifier && !errors.password
+    if (!username.value.trim() || !password.value) {
+      error.value = 'Preencha usuário/e-mail e senha para entrar.';
+      return;
     }
 
-    async function handleLogin() {
-      serverError.value = ''
-      if (!validate()) return
-
-      loading.value = true
-      try {
-        const res = await api.post('/login', {
-          identifier: form.identifier,
-          password: form.password
-        })
-
-        localStorage.setItem('token', res.data.token)
-        this.$router.push('/profile')
-      } catch (err) {
-        serverError.value =
-          err.response?.data?.message || 'Usuário ou senha inválidos.'
-      } finally {
-        loading.value = false
-      }
-    }
-
-    return {
-      form,
-      errors,
-      showPassword,
-      loading,
-      serverError,
-      handleLogin
-    }
+    isSubmitting.value = true;
+    // Simula uma chamada de autenticação. Troque pela chamada real ao backend.
+    setTimeout(() => {
+      isSubmitting.value = false;
+      toastMessage.value = `Bem-vindo(a) de volta, ${username.value.trim()}!`;
+    }, 700);
   }
+
+  function handleForgotPassword() {
+    toastMessage.value = 'Um corvo foi enviado com instruções de recuperação.';
+  }
+
+  function handleCreateAccount() {
+    toastMessage.value = 'Vamos criar sua conta no Clã em breve!';
+  }
+
+  return {
+    username,
+    password,
+    error,
+    isSubmitting,
+    canSubmit,
+    toastMessage,
+    handleSubmit,
+    handleForgotPassword,
+    handleCreateAccount,
+  };
 }

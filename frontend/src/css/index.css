@@ -8,10 +8,25 @@
 
 body {
   display: flex;
-  background-image: url('../../assets/wallpaper/wallpaper1.jpg'); /* ajuste o nome exato da imagem */
+  background:
+    linear-gradient(rgba(8, 6, 4, 0.55), rgba(8, 6, 4, 0.55)),
+    url('../../assets/wallpaper/wallpaper1.jpg') center center / cover no-repeat fixed;
+
   background-size: cover;
   background-position: center;
   justify-content: center;
   align-items: center;
+  min-height: 100vh;
   height: 100vh;
 }
+
+/*
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background:
+    linear-gradient(rgba(8, 6, 4, 0.55), rgba(8, 6, 4, 0.55)),
+    url('../../assets/wallpaper/wallpaper1.jpg') center center / cover no-repeat fixed;
+}*/

@@ -1,62 +1,82 @@
 <template>
-  <div class="login-page">
-    <!-- Painel esquerdo -->
-    <div class="left-panel">
-      <div class="logo">
-        <img src="../public/icone 5.png" alt="Logo" />
+  <div class="guild-card">
+    <section class="guild-hero">
+      <div class="guild-emblem">
+        <img src="/public/icon-main.png" alt=""  />
       </div>
-      <h1>
-        Veja momentos do dia a dia dos seus
-        <span class="highlight">amigos próximos</span>.
+
+      <h1 class="guild-headline">
+        Una-se ao maior Clã da internet<br />
+        encontre e <span class="accent">forje amizades!</span>
       </h1>
+      <p class="guild-subline">As aventuras são mais legais com seus amigos</p>
 
-      <div class="hero-frame">
-        <img src="../assets/wallpaper/Copilot_20260718_101652.png" alt="Membros do clã reunidos em um banquete à luz de tochas" />
+      <div class="tavern-scene">
+        <img :src="tavernWallpaper" alt="Taverna do Javali Dourado" />
       </div>
+    </section>
+
+    <div class="guild-divider">
+      <img src="../assets/wallpaper/border.png" alt="" />
     </div>
 
-    <!-- Painel direito -->
-    <div class="right-panel">
-      <form class="login-card" @submit.prevent="handleLogin">
-        <h2>Entrar</h2>
+    <section class="guild-form-panel">
+      <h2 class="guild-form-title">Entrar no Guildfy</h2>
 
-        <div class="input-group">
+      <form @submit.prevent="handleSubmit" novalidate>
+        <div class="guild-field">
+          <label class="sr-only" for="username">Nome de usuário ou email</label>
           <input
+            id="username"
             type="text"
-            v-model="form.identifier"
+            autocomplete="username"
             placeholder="Nome de usuário ou email"
-            :class="{ invalid: errors.identifier }"
+            v-model="username"
           />
-          <span v-if="errors.identifier" class="error-icon" title="Campo obrigatório">⚠️</span>
         </div>
 
-        <div class="input-group">
+        <div class="guild-field">
+          <label class="sr-only" for="password">Senha</label>
           <input
-            :type="showPassword ? 'text' : 'password'"
-            v-model="form.password"
+            id="password"
+            type="password"
+            autocomplete="current-password"
             placeholder="Senha"
-            :class="{ invalid: errors.password }"
+            v-model="password"
           />
-          <span v-if="errors.password" class="error-icon" title="Campo obrigatório">⚠️</span>
         </div>
 
-        <button type="submit" class="btn-primary" :disabled="loading">
-          {{ loading ? 'Entrando...' : 'Entrar' }}
+        <p class="guild-error" v-if="error">{{ error }}</p>
+
+        <button class="guild-submit" type="submit" :disabled="!canSubmit">
+          {{ isSubmitting ? 'Entrando…' : 'Entrar' }}
         </button>
-
-        <router-link to="/forgot-password" class="forgot-link">
-          Esqueceu a senha?
-        </router-link>
-
-        <router-link to="/signup" class="btn-outline">
-          Criar nova conta
-        </router-link>
-
-        <p v-if="serverError" class="server-error">{{ serverError }}</p>
       </form>
-    </div>
+
+      <a class="guild-forgot" href="#" @click.prevent="handleForgotPassword">Esqueceu a senha?</a>
+
+      <button class="guild-create" type="button" @click="handleCreateAccount">Criar nova conta</button>
+
+      <p class="guild-toast" aria-live="polite">{{ toastMessage }}</p>
+    </section>
   </div>
 </template>
-<script src="./js/login.js"></script>
 
-<style scoped src="./css/verif.css"></style>
+<script setup>
+import { useLoginForm } from './js/login.js';
+import tavernWallpaper from '../assets/wallpaper/login-2.png';
+
+const {
+  username,
+  password,
+  error,
+  isSubmitting,
+  canSubmit,
+  toastMessage,
+  handleSubmit,
+  handleForgotPassword,
+  handleCreateAccount,
+} = useLoginForm();
+</script>
+
+<style scoped src="./css/login.css"></style>
