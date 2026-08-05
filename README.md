@@ -17,6 +17,8 @@ Projeto acadêmico/educacional que replica funcionalidades básicas do Instagram
 **Infraestrutura**
 - Docker / Docker Compose
 
+teste
+
 ## 📁 Estrutura do projeto
 
 ```
