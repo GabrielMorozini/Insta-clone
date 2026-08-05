@@ -1,118 +1,99 @@
 <template>
-  <div class="signup-container">
-    <form class="signup-form" @submit.prevent="handleSubmit">
-      <h2 class="form-title">Criar conta</h2>
+  <div class="right-panel">
+    <div class="signup-card">
+      <h2>Inicie sua jornada com Guildfy</h2>
+      <p class="form-subtitle">Cadastre-se para ver fotos, vídeos dos seus amigos.</p>
 
-      <div class="mb-3">
-        <label for="name" class="form-label">Nome completo</label>
-        <input
-          type="text"
-          id="name"
-          class="form-control"
-          v-model="form.name"
-          required
-        >
-      </div>
+      <form @submit.prevent="handleSubmit">
+        <div class="input-group">
+          <label for="contact">Email</label>
+          <input
+            type="text"
+            id="contact"
+            v-model="form.contact"
+            placeholder="email"
+            :class="{ invalid: errorMessage }"
+          >
+        </div>
 
-      <div class="mb-3">
-        <label for="username" class="form-label">Nome de usuário</label>
-        <input
-          type="text"
-          id="username"
-          class="form-control"
-          v-model="form.username"
-          required
-        >
-      </div>
+        <div class="input-group">
+          <label for="password">Senha</label>
+          <input
+            type="password"
+            id="password"
+            v-model="form.password"
+            placeholder="senha"
+            minlength="6"
+            :class="{ invalid: errorMessage }"
+          >
+        </div>
 
-      <div class="mb-3">
-        <label for="contact" class="form-label">Celular ou e-mail</label>
-        <input
-          type="text"
-          id="contact"
-          class="form-control"
-          v-model="form.contact"
-          placeholder="exemplo@email.com ou (42) 99999-9999"
-          required
-        >
-      </div>
+        <div class="date-group">
+          <label class="date-label">Data de aniversário:</label>
+          <div class="date-selects">
+            <select v-model="form.day" class="date-select">
+              <option value="" disabled>Dia</option>
+              <option v-for="d in 31" :key="d" :value="d">{{ d }}</option>
+            </select>
 
-      <div class="mb-3">
-        <label for="birthdate" class="form-label">Data de nascimento</label>
-        <input
-          type="date"
-          id="birthdate"
-          class="form-control"
-          v-model="form.birthdate"
-          required
-        >
-      </div>
+            <select v-model="form.month" class="date-select">
+              <option value="" disabled>Mês</option>
+              <option v-for="(m, i) in months" :key="i" :value="i + 1">{{ m }}</option>
+            </select>
 
-      <div class="mb-3">
-        <label for="password" class="form-label">Senha</label>
-        <input
-          type="password"
-          id="password"
-          class="form-control"
-          v-model="form.password"
-          minlength="6"
-          required
-        >
-      </div>
+            <select v-model="form.year" class="date-select">
+              <option value="" disabled>Ano</option>
+              <option v-for="y in years" :key="y" :value="y">{{ y }}</option>
+            </select>
+          </div>
+        </div>
 
-      <p v-if="errorMessage" class="text-danger">{{ errorMessage }}</p>
+        <div class="input-group">
+          <label for="name">Nome</label>
+          <input
+            type="text"
+            id="name"
+            v-model="form.name"
+            placeholder="Nome completo"
+          >
+        </div>
 
-      <button type="submit" class="btn btn-primary w-100">Cadastrar</button>
-    </form>
+        <div class="input-group">
+          <label for="username">Nome de usuário</label>
+          <input
+            type="text"
+            id="username"
+            v-model="form.username"
+            placeholder="Nome de usuário"
+          >
+        </div>
+
+        <p v-if="errorMessage" class="server-error">{{ errorMessage }}</p>
+
+        <button type="submit" class="btn-primary" :disabled="isSubmitting">
+          {{ isSubmitting ? 'Cadastrando…' : 'Cadastrar' }}
+        </button>
+      </form>
+
+      <button type="button" class="btn-outline" @click="goToLogin">
+        Já tenho uma conta
+      </button>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue'
+import { useSignupForm } from './js/sign.js';
 
-const form = reactive({
-  name: '',
-  username: '',
-  contact: '',
-  birthdate: '',
-  password: ''
-})
-
-const errorMessage = ref('')
-
-function handleSubmit() {
-  errorMessage.value = ''
-
-  // validação simples do contato: email ou celular
-  const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.contact)
-  const isPhone = /^\(?\d{2}\)?\s?\d{4,5}-?\d{4}$/.test(form.contact)
-
-  if (!isEmail && !isPhone) {
-    errorMessage.value = 'Digite um e-mail ou celular válido.'
-    return
-  }
-
-  console.log('Dados do cadastro:', form)
-  // aqui depois entra a chamada pra sua API (fetch/axios)
-}
+const {
+  form,
+  errorMessage,
+  isSubmitting,
+  months,
+  years,
+  goToLogin,
+  handleSubmit
+} = useSignupForm();
 </script>
 
-<style scoped>
-.signup-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-}
-
-.signup-form {
-  width: 100%;
-  max-width: 400px;
-  padding: 2rem;
-}
-
-.form-title {
-  text-align: center;
-  margin-bottom: 1.5rem;
-}
-</style>
+<style scoped src="./css/sign.css"></style>

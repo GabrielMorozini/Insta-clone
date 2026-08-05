@@ -1,6 +1,10 @@
 import { ref, computed } from 'vue';
+import { useRouter } from 'vue-router';
+import { login } from '@/services/auth';
 
 export function useLoginForm() {
+  const router = useRouter();
+
   const username = ref('');
   const password = ref('');
   const error = ref('');
@@ -11,7 +15,7 @@ export function useLoginForm() {
     () => username.value.trim().length > 0 && password.value.length > 0 && !isSubmitting.value
   );
 
-  function handleSubmit() {
+  async function handleSubmit() {
     error.value = '';
     toastMessage.value = '';
 
@@ -21,11 +25,24 @@ export function useLoginForm() {
     }
 
     isSubmitting.value = true;
-    // Simula uma chamada de autenticação. Troque pela chamada real ao backend.
-    setTimeout(() => {
+
+    try {
+      const data = await login(username.value.trim(), password.value);
+      toastMessage.value = `Bem-vindo(a) de volta, ${data.user.name ?? username.value.trim()}!`;
+
+      setTimeout(() => {
+        router.push('/');
+      }, 600);
+    } catch (err) {
+      if (err.response?.status === 401) {
+        error.value = 'Usuário ou senha incorretos.';
+      } else {
+        error.value = 'Não foi possível entrar. Tente novamente.';
+      }
+      console.error(err);
+    } finally {
       isSubmitting.value = false;
-      toastMessage.value = `Bem-vindo(a) de volta, ${username.value.trim()}!`;
-    }, 700);
+    }
   }
 
   function handleForgotPassword() {
@@ -33,7 +50,7 @@ export function useLoginForm() {
   }
 
   function handleCreateAccount() {
-    toastMessage.value = 'Vamos criar sua conta no Clã em breve!';
+    router.push('/signup'); // ajuste pro path exato configurado no seu router
   }
 
   return {
