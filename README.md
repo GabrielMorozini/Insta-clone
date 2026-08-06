@@ -1,4 +1,4 @@
-# Projeto Final — Guildfy 🧙‍♂️
+# Insta clone (Projeto Final) — Guildfy 🧙‍♂️
 
 Projeto acadêmico/educacional que replica funcionalidades básicas do Instagram, com foco em praticar consumo de API REST, autenticação e operações CRUD full-stack.
 
