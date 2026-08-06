@@ -54,10 +54,20 @@
 </template>
 
 <script setup>
-import Sidebar from './components/Sidebar.vue'
-import { useFeed } from './js/feed.js'
 
-const { posts, suggestions, currentUser, isLoading, errorMessage, follow } = useFeed()
+import { useRouter } from 'vue-router'
+import { logout } from './services/auth.js'
+
+const router = useRouter()
+
+async function handleLogout() {
+  try {
+    await logout()
+  } finally {
+    router.push('/login')
+  }
+}
 </script>
 
+<style scoped src="./css/style.css"></style>
 <style scoped src="./css/feed.css"></style>
