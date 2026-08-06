@@ -1,0 +1,19 @@
+# Dependências locais (deixe o Docker instalar dentro do container)
+**/node_modules
+**/vendor
+
+# Histórico e logs
+.git
+.gitignore
+*.log
+.env
+
+# Builds locais
+**/dist
+**/build
+**/.next
+**/.nuxt
+
+# Outros arquivos temporários
+.DS_Store
+*.tmp

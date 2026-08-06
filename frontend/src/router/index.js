@@ -11,12 +11,14 @@ const routes = [
   {
     path: '/login',
     name: 'Login',
-    component: Login
+    component: Login,
+    meta: { hideSidebar: true }
   },
   {
     path: '/signup',
     name: 'SignUp',
-    component: SignUp
+    component: SignUp,
+    meta: { hideSidebar: true }
   },
   {
     path: '/profile',
@@ -26,7 +28,7 @@ const routes = [
   }
 ]
 
-const router = createRouter ({
+const router = createRouter({
   history: createWebHistory(),
   routes
 })

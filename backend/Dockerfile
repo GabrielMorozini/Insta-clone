@@ -21,7 +21,8 @@ RUN --mount=type=cache,target=/tmp/composer-cache \
 
 COPY . .
 
-RUN composer dump-autoload --classmap-authoritative
+ENV COMPOSER_PROCESS_TIMEOUT=1200
+RUN composer dump-autoload --classmap-authoritative --no-scripts
 
 # -----------------------------------------------------------------------------
 # Stage 2: FrankenPHP runtime
