@@ -31,7 +31,7 @@ export function useLoginForm() {
       toastMessage.value = `Bem-vindo(a) de volta, ${data.user.name ?? username.value.trim()}!`;
 
       setTimeout(() => {
-        router.push('/');
+        router.push('/feed');
       }, 600);
     } catch (err) {
       if (err.response?.status === 401) {

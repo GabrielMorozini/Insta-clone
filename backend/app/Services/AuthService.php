@@ -20,24 +20,30 @@ class AuthService
         return $user;
     }
 
-    public function login(array $credentials): User
-    {
-        if (!Auth::attempt($credentials)) {
-            throw ValidationException::withMessages([
-                'email' => ['As credenciais fornecidas estão incorretas.'],
-            ]);
-        }
+   public function login(array $data): User {
+    $field = filter_var($data['login'], FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
 
-        $user = Auth::user();
+    $credentials = [
+        $field => $data['login'],
+        'password' => $data['password'],
+    ];
 
-        if (!$user->hasVerifiedEmail()) {
-            throw ValidationException::withMessages([
-                'email' => ['Seu e-mail ainda não foi verificado. Por favor, verifique sua caixa de entrada.'],
-            ]);
-        }
-
-        return $user;
+    if (!Auth::attempt($credentials)) {
+        throw ValidationException::withMessages([
+            'login' => ['As credenciais fornecidas estão incorretas.'],
+        ]);
     }
+
+    $user = Auth::user();
+
+    if (!$user->hasVerifiedEmail()) {
+        throw ValidationException::withMessages([
+            'login' => ['Seu e-mail ainda não foi verificado. Por favor, verifique sua caixa de entrada.'],
+        ]);
+    }
+
+    return $user;
+}
 
     public function createToken(User $user): string
     {

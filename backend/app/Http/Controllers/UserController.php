@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -18,7 +19,7 @@ class UserController extends Controller
             ->withCount(['followers', 'following', 'posts'])
             ->firstOrFail();
 
-        return response()->json($user);
+        return new UserResource($user);
     }
 
     /**
@@ -41,7 +42,7 @@ class UserController extends Controller
 
         return response()->json([
             'message' => 'Perfil atualizado com sucesso!',
-            'user'    => $user
+            'user'    => new UserResource($user)
         ]);
     }
 

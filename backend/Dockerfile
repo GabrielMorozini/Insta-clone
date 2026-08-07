@@ -37,13 +37,10 @@ ENV APP_ENV=production \
 
 RUN apk add --no-cache \
         bash \
-        mysql-client \
         tini \
  && install-php-extensions \
         pdo_mysql \
-        intl \
         zip \
-        bcmath \
         opcache \
         pcntl \
         gd \

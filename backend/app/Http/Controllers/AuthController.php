@@ -39,7 +39,9 @@ class AuthController extends Controller {
 
     public function me(Request $request)
     {
-        return new UserResource($request->user());
+        $user = $request->user()->loadCount(['posts', 'followers', 'following']);
+
+        return new UserResource($user);
     }
 
     /**

@@ -1,7 +1,6 @@
 import api from './api'
-
-export async function login(email, password) {
-  const response = await api.post('/auth/login', { email, password })
+export async function login(login, password) {
+  const response = await api.post('/auth/login', { login, password })
   localStorage.setItem('token', response.data.access_token)
   return response.data
 }

@@ -1,7 +1,7 @@
 <template>
   <div class="profile-layout">
-    <Sidebar />
-    
+    <SideBar />
+
   <div class="profile-page">
     <!-- Loading -->
     <div v-if="loading" class="loading-state">
@@ -59,14 +59,21 @@
 
       <!-- Ações -->
       <div class="action-buttons">
+        <!-- Próprio perfil: mostra "Editar perfil" -->
+        <button v-if="isOwnProfile" class="btn" @click="$router.push('/settings/profile')">
+          Editar perfil
+        </button>
+
+        <!-- Perfil de outra pessoa: mostra "Seguir" -->
         <button
+          v-else
           class="btn"
           :class="{ following: isFollowing }"
           @click="toggleFollow"
         >
           {{ isFollowing ? 'Seguindo' : 'Seguir' }}
         </button>
-        <button class="btn secondary">Mensagem</button>
+
         <button class="btn icon-only">
           <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M12 2a1 1 0 0 1 1 1v8h8a1 1 0 1 1 0 2h-8v8a1 1 0 1 1-2 0v-8H3a1 1 0 1 1 0-2h8V3a1 1 0 0 1 1-1z"/></svg>
         </button>
@@ -116,9 +123,10 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import axios from 'axios'
+import api from '@/services/api'
+import SideBar from '@/Sidebar.vue'
 
 const route = useRoute()
 
@@ -126,6 +134,7 @@ const loading = ref(true)
 const error = ref(false)
 
 const user = reactive({
+  id: null,
   username: '',
   fullName: '',
   avatar: '',
@@ -136,10 +145,16 @@ const user = reactive({
   following: 0,
 })
 
+const currentUserId = ref(null)
 const isFollowing = ref(false)
 const activeTab = ref('posts')
 const highlights = ref([])
 const posts = ref([])
+
+// true quando o perfil sendo visto é o do próprio usuário logado
+const isOwnProfile = computed(() => {
+  return currentUserId.value !== null && currentUserId.value === user.id
+})
 
 const tabs = [
   { name: 'posts', icon: 'M4 4h16v16H4V4zm2 2v12h12V6H6z' },
@@ -152,31 +167,38 @@ async function fetchProfile() {
   error.value = false
 
   try {
-    // Fallback para o ID 1 se a rota estiver vazia
-    const userId = route.params.id || 1
+    const usernameParam = route.params.username
 
-    // 1. Busca dados do usuário
-    const userRes = await axios.get(`/api/users/${userId}`)
-    const data = userRes.data
+    // Sempre busca quem está logado (necessário pra saber se é o próprio perfil
+    // e também serve como dados do perfil quando /profile é acessado sem parâmetro)
+    const meRes = await api.get('/auth/me')
+    currentUserId.value = meRes.data.id
+
+    let data
+    if (usernameParam) {
+      const userRes = await api.get(`/users/${usernameParam}`)
+      data = userRes.data
+    } else {
+      data = meRes.data
+    }
 
     Object.assign(user, {
+      id: data.id,
       username: data.username,
       fullName: data.name,
       avatar: data.avatar_url,
       bio: data.bio,
-      website: data.website,
-      postsCount: data.posts_count,
-      followers: data.followers_count,
-      following: data.following_count,
+      website: data.website ?? '',
+      postsCount: data.posts_count ?? 0,
+      followers: data.followers_count ?? 0,
+      following: data.following_count ?? 0,
     })
 
-    isFollowing.value = data.is_following
+    isFollowing.value = data.is_following ?? false
 
-    // 2. Busca os posts de forma segura
-    const postsRes = await axios.get(`/api/users/${userId}/posts`)
+    const postsRes = await api.get(`/users/${data.id}/posts`)
     const postsData = postsRes.data
-    
-    // Tratamento para garantir que postsData seja uma lista válida
+
     let postsList = []
     if (Array.isArray(postsData)) {
       postsList = postsData
@@ -184,17 +206,15 @@ async function fetchProfile() {
       postsList = postsData.posts
     }
 
-    posts.value = postsList.map((p) => {
-      return {
-        id: p.id,
-        image: p.image_url,
-        isMultiple: p.media_count > 1
-      }
-    })
+    posts.value = postsList.map((p) => ({
+      id: p.id,
+      image: p.image_url,
+      isMultiple: p.media_count > 1,
+    }))
 
     highlights.value = data.highlights ?? []
   } catch (err) {
-    console.error("Erro detalhado na requisição:")
+    console.error('Erro detalhado na requisição:')
     console.dir(err)
     error.value = true
   } finally {
@@ -208,11 +228,10 @@ async function toggleFollow() {
   user.followers += isFollowing.value ? 1 : -1
 
   try {
-    const userId = route.params.id || 1
     if (isFollowing.value) {
-      await axios.post(`/api/users/${userId}/follow`)
+      await api.post(`/users/${user.id}/follow`)
     } else {
-      await axios.delete(`/api/users/${userId}/follow`)
+      await api.delete(`/users/${user.id}/follow`)
     }
   } catch (err) {
     isFollowing.value = previous
@@ -228,6 +247,5 @@ function formatNumber(n) {
 
 onMounted(fetchProfile)
 </script>
-
 
 <style scoped src="./css/profile.css"></style>

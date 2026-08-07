@@ -5,13 +5,7 @@
 .profile-layout {
   display: flex;
   min-height: 100vh;
-  background: #000;
-}
-
-.profile-layout {
-  display: flex;
-  min-height: 100vh;
-  background: #000;
+  background: transparent;
 }
 
 .profile-page {
@@ -62,7 +56,7 @@
   border-bottom: 1px solid #262626;
   position: sticky;
   top: 0;
-     background: #00000047;
+  background: #00000047;
   z-index: 10;
 }
 

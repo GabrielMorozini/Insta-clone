@@ -27,6 +27,8 @@ class UserResource extends JsonResource
             }
         }
 
+        $authUser = $request->user();
+
         return [
             'id'       => $this->id,
             'name'     => $this->name,
@@ -39,6 +41,11 @@ class UserResource extends JsonResource
             'posts_count'     => $this->whenCounted('posts'),
             'followers_count' => $this->whenCounted('followers'),
             'following_count' => $this->whenCounted('following'),
+            // Só calcula is_following quando é o perfil de outra pessoa (não o próprio)
+            'is_following' => $this->when(
+                $authUser && $authUser->id !== $this->id,
+                fn () => $authUser->following()->where('users.id', $this->id)->exists()
+            ),
         ];
     }
 }
