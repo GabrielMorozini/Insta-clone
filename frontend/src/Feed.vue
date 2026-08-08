@@ -3,6 +3,7 @@
   <div class="tavern-layout">
     <Navbar />
     <main class="guild-feed">
+      <Explore class="feed-search-bar" />
       <section class="crest-rail" aria-label="Brasões da guilda">
         <button class="crest-item crest-item--self" @click="handleAddCrest">
           <span class="crest-ring crest-ring--empty">
@@ -118,7 +119,6 @@
 
       <div class="suggestions-header">
         <span>Convocar aventureiros</span>
-        <button @click="refreshSuggestions">Ver mais</button>
       </div>
 
       <ul class="suggestions-list">
@@ -154,6 +154,7 @@
 <script setup>
 import { RouterLink } from 'vue-router';
 import { useFeed } from './js/feed.js';
+import Explore from '@/components/Explore.vue'
 import Navbar from '@/components/Sidebar.vue'
 
 // Tudo que está na pasta public fica disponível na raiz '/' do navegador
@@ -171,10 +172,8 @@ const {
   toggleFollow,
   submitComment,
   focusComment,
-  handleCreatePost,
   handleAddCrest,
   handleOpenCrest,
-  handleLogout,
   refreshSuggestions,
 } = useFeed();
 </script>

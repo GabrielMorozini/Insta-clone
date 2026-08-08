@@ -1,6 +1,6 @@
 <template>
   <div class="profile-layout">
-    <SideBar />
+    <Navbar />
 
   <div class="profile-page">
     <!-- Loading -->
@@ -31,7 +31,10 @@
 
       <!-- Info -->
       <section class="profile-info">
-        <img class="avatar" :src="user.avatar" :alt="user.username" />
+        <img v-if="user.avatar" class="avatar" :src="user.avatar" :alt="user.username" />
+<div v-else class="avatar-placeholder">
+  {{ user.username?.charAt(0).toUpperCase() || '?' }}
+</div>
 
         <div class="stats">
           <div class="stat">
@@ -89,7 +92,6 @@
         </div>
       </div>
 
-      <!-- Tabs -->
       <nav class="tabs">
         <button
           v-for="tab in tabs"
@@ -102,7 +104,6 @@
         </button>
       </nav>
 
-      <!-- Grid de posts -->
       <div class="posts-grid" v-if="activeTab === 'posts' && posts.length">
         <div class="post-thumb" v-for="post in posts" :key="post.id">
           <img :src="post.image" :alt="`post ${post.id}`" loading="lazy" />
@@ -126,7 +127,7 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import api from '@/services/api'
-import SideBar from '@/Sidebar.vue'
+import Navbar from '@/components/Sidebar.vue'
 
 const route = useRoute()
 

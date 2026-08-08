@@ -1,7 +1,4 @@
 <template>
- <!-- ═══════════════════════════════════════
-         SIDEBAR ESQUERDO — Navegação Principal
-         ═══════════════════════════════════════ -->
     <aside class="guild-nav">
       <div class="guild-nav-logo">
         <img src="/icon-main.png" alt="Guildfy Logo" />
@@ -41,4 +38,25 @@
     </aside>
 </template>
 
+<script setup>
+import { RouterLink } from 'vue-router';
+import { useFeed } from '../js/feed.js';
+const defaultAvatar ='/icon-profile.png';
+const {
+ currentUser,
+  posts,
+  crests,
+  suggestions,
+  isLoading,
+  commentDrafts,
+  setCommentRef,
+  toggleLike,
+  toggleFollow,
+  submitComment,
+  focusComment,
+  handleAddCrest,
+  handleOpenCrest,
+  refreshSuggestions,
+} = useFeed();
+</script>
 <style scoped src="../css/sidebar.css"></style>

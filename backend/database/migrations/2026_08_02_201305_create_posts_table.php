@@ -13,13 +13,13 @@ return new class extends Migration
     {
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
-            
+
             // Relacionamento com a tabela de usuários (Foreign Key)
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            
-            // Exemplo de campo de conteúdo do post (ajuste se seu post tiver título, etc.)
-            $table->text('content'); 
-            
+
+            $table->string('image_path');
+            $table->text('caption')->nullable();
+
             $table->timestamps();
         });
     }
@@ -29,7 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        // Alterado de 'post' para 'posts'
         Schema::dropIfExists('posts');
     }
 };

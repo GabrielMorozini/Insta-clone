@@ -1,6 +1,6 @@
 <template>
   <div class="edit-layout">
-    <SideBar />
+    <Navbar />
 
     <div class="edit-page">
       <div v-if="loading" class="loading-state">
@@ -101,8 +101,8 @@
 </template>
 
 <script setup>
-import SideBar from './Sidebar.vue'
-
+import { onMounted } from 'vue'
+import Navbar from '@/components/Sidebar.vue'
 import {
   loading,
   saving,
@@ -115,8 +115,11 @@ import {
   form,
   initials,
   handleSave,
-  handleAvatarChange
-} from './js/editProfile.js'
+  handleAvatarChange,
+  fetchUserData
+} from '@/js/editProfile.js'
+
+onMounted(fetchUserData)
 </script>
 
 <style scoped src="./css/editProfile.css"></style>

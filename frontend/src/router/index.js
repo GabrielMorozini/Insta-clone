@@ -4,7 +4,7 @@ import SignUp from '../SignUp.vue'
 import Profile from '../Profile.vue'
 import EditProfile from '../EditProfile.vue'
 import Feed from '../Feed.vue'
-import Explore from '../Explore.vue'
+import Explore from '../components/Explore.vue'
 
 const routes = [
   {
@@ -24,7 +24,6 @@ const routes = [
     meta: { hideSidebar: true }
   },
   {
-    // Sem parâmetro = perfil de quem está logado
     path: '/profile',
     name: 'Profile',
     component: Profile,
@@ -33,7 +32,7 @@ const routes = [
   {
     path: '/posts/new',
     name: 'CreatePost',
-    component: () => import('../Feed.vue'), // ou crie um CreatePost.vue
+    component: () => import('../Feed.vue'), 
   },
   {
     path: '/explore',
@@ -46,7 +45,6 @@ const routes = [
     redirect: '/feed',
   },
   {
-    // Com parâmetro = perfil de outro usuário (ou o seu, se o username bater)
     path: '/profile/:username',
     name: 'ProfileUser',
     component: Profile,
