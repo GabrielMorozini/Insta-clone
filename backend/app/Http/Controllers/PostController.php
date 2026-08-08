@@ -16,9 +16,6 @@ class PostController extends Controller
 
     public function __construct(private PostService $postService) {}
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StorePostRequest $request)
     {
         $post = $this->postService->store(
@@ -30,9 +27,6 @@ class PostController extends Controller
         return new PostResource($post);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
         $post = $this->postService->show($id);
@@ -40,9 +34,7 @@ class PostController extends Controller
         return new PostResource($post);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+
     public function update(UpdatePostRequest $request, string $id)
     {
         $post = Post::findOrFail($id);
@@ -54,9 +46,7 @@ class PostController extends Controller
         return new PostResource($updatedPost);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+   
     public function destroy(string $id)
     {
         $post = Post::findOrFail($id);

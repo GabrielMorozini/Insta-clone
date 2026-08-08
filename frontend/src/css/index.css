@@ -6,13 +6,39 @@
   box-sizing: border-box;
 }
 
+:root {
+  --bg-void: #100c08;
+  --bg-panel: #1c1610;
+  --wood-dark: #241b12;
+  --wood-line: #3a2c1c;
+  --parchment: #ece2c8;
+  --gold: #c8912f;
+  --gold-bright: #e0ab4a;
+  --gold-dim: #8a6a2f;
+  --ember: #a23a2b;
+  --ink: #0e0b08;
+  --text-muted: #b8ab8c;
+  --focus-ring: #e0ab4a;
+  --font: 'MedievalSharp', cursive;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  width: 100%;
+  background: var(--bg-void);
+  font-family: var(--font);
+  color: var(--parchment);
+}
+
 body {
   display: flex;
   background:
     linear-gradient(rgba(8, 6, 4, 0.55), rgba(8, 6, 4, 0.55)),
     url('../../assets/wallpaper/wallpaper1.jpg') center center / cover no-repeat fixed;
-
   background-size: cover;
+  font-family:"MedievalSharp", cursive;
   background-position: center;
   justify-content: center;
   align-items: center;
@@ -20,13 +46,18 @@ body {
   height: 100vh;
 }
 
-/*
-body {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+#app {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+  width: 100%;
   min-height: 100vh;
-  background:
-    linear-gradient(rgba(8, 6, 4, 0.55), rgba(8, 6, 4, 0.55)),
-    url('../../assets/wallpaper/wallpaper1.jpg') center center / cover no-repeat fixed;
-}*/
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -9,21 +9,31 @@ export function useFeed() {
   const errorMessage = ref('')
 
   async function loadFeed() {
-    try {
-      const [feedRes, suggestionsRes, meRes] = await Promise.all([
-        api.get('/feed'),
-        api.get('/users/suggestions'),
-        api.get('/auth/me'),
-      ])
-      posts.value = feedRes.data.data ?? feedRes.data
-      suggestions.value = suggestionsRes.data.data ?? suggestionsRes.data
-      currentUser.value = meRes.data.data ?? meRes.data
-    } catch (err) {
-      errorMessage.value = 'Não foi possível carregar o feed agora.'
-      console.error(err)
-    } finally {
-      isLoading.value = false
+    const [feedResult, suggestionsResult, meResult] = await Promise.allSettled([
+      api.get('/feed'),
+      api.get('/users/suggestions'),
+      api.get('/auth/me'),
+    ])
+
+    if (feedResult.status === 'fulfilled') {
+      posts.value = feedResult.value.data.data ?? feedResult.value.data
+    } else {
+      console.error('Erro ao carregar feed:', feedResult.reason)
     }
+
+    if (suggestionsResult.status === 'fulfilled') {
+      suggestions.value = suggestionsResult.value.data.data ?? suggestionsResult.value.data
+    } else {
+      console.error('Erro ao carregar sugestões:', suggestionsResult.reason)
+    }
+
+    if (meResult.status === 'fulfilled') {
+      currentUser.value = meResult.value.data.data ?? meResult.value.data
+    } else {
+      console.error('Erro ao carregar usuário atual:', meResult.reason)
+    }
+
+    isLoading.value = false
   }
 
   async function follow(userId) {

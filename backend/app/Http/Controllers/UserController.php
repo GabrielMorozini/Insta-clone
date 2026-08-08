@@ -110,8 +110,7 @@ class UserController extends Controller
     /**
      * Retorna sugestões de usuários para seguir (exclui o próprio usuário e quem ele já segue).
      */
-    public function suggestions(Request $request)
-    {
+    public function suggestions(Request $request) {
         $currentUser = $request->user();
 
         // Pega os IDs dos usuários que ele já segue

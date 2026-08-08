@@ -4,6 +4,7 @@ import SignUp from '../SignUp.vue'
 import Profile from '../Profile.vue'
 import EditProfile from '../EditProfile.vue'
 import Feed from '../Feed.vue'
+import Explore from '../Explore.vue'
 
 const routes = [
   {
@@ -30,6 +31,21 @@ const routes = [
     meta: { requireAuth: true }
   },
   {
+    path: '/posts/new',
+    name: 'CreatePost',
+    component: () => import('../Feed.vue'), // ou crie um CreatePost.vue
+  },
+  {
+    path: '/explore',
+    name: 'Explore',
+    component: Explore,
+    meta: { requireAuth: true }
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: '/feed',
+  },
+  {
     // Com parâmetro = perfil de outro usuário (ou o seu, se o username bater)
     path: '/profile/:username',
     name: 'ProfileUser',
@@ -54,5 +70,17 @@ const router = createRouter({
   history: createWebHistory(),
   routes
 })
+
+router.beforeEach((to, from, next) => {
+  const publicPages = ['/login', '/signup'];
+  const authRequired = !publicPages.includes(to.path);
+  const token = localStorage.getItem('token');
+
+  if (authRequired && !token) {
+    return next('/login');
+  }
+
+  next();
+});
 
 export default router
