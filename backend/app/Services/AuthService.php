@@ -20,7 +20,8 @@ class AuthService
         return $user;
     }
 
-   public function login(array $data): User {
+   public function login(array $data): User
+{
     $field = filter_var($data['login'], FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
 
     $credentials = [
@@ -34,15 +35,7 @@ class AuthService
         ]);
     }
 
-    $user = Auth::user();
-
-    if (!$user->hasVerifiedEmail()) {
-        throw ValidationException::withMessages([
-            'login' => ['Seu e-mail ainda não foi verificado. Por favor, verifique sua caixa de entrada.'],
-        ]);
-    }
-
-    return $user;
+    return Auth::user();
 }
 
     public function createToken(User $user): string

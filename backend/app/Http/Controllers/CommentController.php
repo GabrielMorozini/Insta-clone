@@ -21,12 +21,11 @@ class CommentController extends Controller
         return CommentResource::collection($comments);
     }
 
-    public function store(StoreCommentRequest $request, string $id)
-    {
+    public function store(StoreCommentRequest $request, string $id) {
         $comment = $this->commentService->store(
             $id,
             auth()->id(),
-            $request->validated('body')
+            $request->validated('content')
         );
 
         return new CommentResource($comment);

@@ -22,4 +22,20 @@ export const postService = {
   deletePost(id) {
     return api.delete(`/posts/${id}`);
   },
+
+  likePost(postId) {
+    return api.post(`/posts/${postId}/like`);
+  },
+
+  unlikePost(postId) {
+    return api.delete(`/posts/${postId}/like`);
+  },
+
+  getComments(postId) {
+    return api.get(`/posts/${postId}/comments`);
+  },
+
+  addComment(postId, content) {
+    return api.post(`/posts/${postId}/comments`, { content });
+  },
 };
