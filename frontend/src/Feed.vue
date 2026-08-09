@@ -3,7 +3,6 @@
   <div class="tavern-layout">
     <Navbar />
     <main class="guild-feed">
-      <Explore class="feed-search-bar" />
       <section class="crest-rail" aria-label="Brasões da guilda">
         <button class="crest-item crest-item--self" @click="handleAddCrest">
           <span class="crest-ring crest-ring--empty">
@@ -27,11 +26,12 @@
         </button>
       </section>
 
-      <div v-if="!isLoading && posts.length === 0" class="feed-empty">
-        <img src="/icon-reel.png" class="feed-empty-icon" alt="Vazio" />
-        <h3>O mural ainda está em branco</h3>
-        <p>Siga outros aventureiros ou publique algo pra começar sua saga.</p>
-      </div>
+       <div class="feed">
+          <h2>Feed</h2>
+          <!-- Componente de criar post que você já tem -->
+          <CreatePost @post-created="onPostCreated" />
+          <PostList ref="postListRef" />
+       </div>
 
       <article v-for="post in posts" :key="post.id" class="post-card">
         <header class="post-header">
@@ -154,8 +154,8 @@
 <script setup>
 import { RouterLink } from 'vue-router';
 import { useFeed } from './js/feed.js';
-import Explore from '@/components/Explore.vue'
 import Navbar from '@/components/Sidebar.vue'
+import PostList from '@/components/PostList.vue';
 
 // Tudo que está na pasta public fica disponível na raiz '/' do navegador
 const defaultAvatar = '/icon-profile.png';
@@ -176,6 +176,13 @@ const {
   handleOpenCrest,
   refreshSuggestions,
 } = useFeed();
+
+const postListRef = ref(null);
+
+const onPostCreated = () => {
+  postListRef.value?.refresh(); // Recarrega o feed
+};
+
 </script>
 
 <style scoped src="./css/feed.css"></style>

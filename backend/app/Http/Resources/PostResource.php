@@ -1,38 +1,30 @@
 <?php
-
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class PostResource extends JsonResource
 {
-    public function toArray($request): array
+    public function toArray($request)
     {
-        $imagePath = $this->image_path;
-        $imageUrl = '';
-
-        if ($imagePath) {
-            if (Str::startsWith($imagePath, ['http://', 'https://'])) {
-                $imageUrl = $imagePath;
-            } else {
-                $imageUrl = url(Storage::url($imagePath));
-            }
-        }
-
         return [
             'id' => $this->id,
-            'image_url' => $imageUrl,
             'caption' => $this->caption,
-            'user' => new UserResource($this->whenLoaded('user')),
-            'likes_count' => $this->whenCounted('likes'),
-            'comments_count' => $this->whenCounted('comments'),
-            'liked_by_me' => $this->when(auth()->check(), function () {
-                return auth()->user()->likedPosts()->where('post_id', $this->id)->exists();
-            }),
-            'created_at' => $this->created_at->toIso8601String(),
-            'updated_at' => $this->updated_at->toIso8601String(),
+            'image_url' => $this->image_path ? Storage::url($this->image_path) : null,
+            'media_count' => 1,
+            'likes_count' => $this->likes()->count(),
+            'comments_count' => $this->comments()->count(),
+            'liked_by_me' => $request->user()
+                ? $this->likes()->where('users.id', $request->user()->id)->exists()
+                : false,
+            'created_at' => $this->created_at,
+            'user' => [
+                'id' => $this->user->id,
+                'username' => $this->user->username,
+                'name' => $this->user->name,
+                'profile_photo' => $this->user->profile_photo ? Storage::url($this->user->profile_photo) : null,
+            ],
         ];
     }
 }

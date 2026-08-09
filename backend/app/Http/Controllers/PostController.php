@@ -16,6 +16,25 @@ class PostController extends Controller
 
     public function __construct(private PostService $postService) {}
 
+    // 🔥 NOVO: Feed global
+    public function feed(Request $request)
+    {
+        $posts = $this->postService->feed($request->query('per_page', 10));
+
+        return PostResource::collection($posts);
+    }
+
+    // 🔥 NOVO: Posts de um usuário específico (perfil)
+    public function userPosts(Request $request, string $userId)
+    {
+        $posts = $this->postService->userPosts(
+            $userId,
+            $request->query('per_page', 10)
+        );
+
+        return PostResource::collection($posts);
+    }
+
     public function store(StorePostRequest $request)
     {
         $post = $this->postService->store(
@@ -34,11 +53,9 @@ class PostController extends Controller
         return new PostResource($post);
     }
 
-
     public function update(UpdatePostRequest $request, string $id)
     {
         $post = Post::findOrFail($id);
-
         $this->authorize('update', $post);
 
         $updatedPost = $this->postService->update($post, $request->validated());
@@ -46,11 +63,9 @@ class PostController extends Controller
         return new PostResource($updatedPost);
     }
 
-   
     public function destroy(string $id)
     {
         $post = Post::findOrFail($id);
-
         $this->authorize('delete', $post);
 
         $this->postService->destroy($post);

@@ -83,21 +83,18 @@ export const handleAvatarChange = async (event) => {
   uploadingAvatar.value = true
   errorMessage.value = ''
 
-  // Preview local imediato
   const reader = new FileReader()
   reader.onload = (e) => {
     avatarPreview.value = e.target.result
   }
   reader.readAsDataURL(file)
 
-  // Envia para o backend
   try {
     const fd = new FormData()
     fd.append('avatar', file)
 
-    const { data } = await api.post('/users/me/avatar', fd, {
-      headers: { 'Content-Type': 'multipart/form-data' }
-    })
+    const { data } = await api.post('/users/me/avatar', fd)
+    // ↑ sem o segundo objeto de headers
 
     avatarPreview.value = data.avatar_url
     successMessage.value = 'Brasão atualizado no reino!'

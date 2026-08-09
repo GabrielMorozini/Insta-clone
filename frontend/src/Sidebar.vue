@@ -4,9 +4,10 @@
       <!-- Logo -->
       <router-link to="/feed" class="sidebar-logo" title="Guildfy">
         <img src="/icon-main.png" alt="Guildfy" />
+        <span class="sidebar-brand">Guildfy</span>
       </router-link>
 
-      <!-- Home / Feed -->
+      <!-- Home -->
       <router-link to="/feed" class="sidebar-icon" active-class="is-active" title="Início">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
@@ -15,7 +16,7 @@
         <span class="sidebar-label">Início</span>
       </router-link>
 
-      <!-- Buscar / Explorar -->
+      <!-- Explorar -->
       <router-link to="/explore" class="sidebar-icon" active-class="is-active" title="Explorar">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="11" cy="11" r="8"/>
@@ -34,7 +35,7 @@
       </router-link>
 
       <!-- Criar Post -->
-      <button class="sidebar-icon sidebar-btn" title="Criar" @click="handleCreate">
+      <button class="sidebar-icon sidebar-btn" title="Criar" @click="showModal = true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="12" y1="5" x2="12" y2="19"/>
           <line x1="5" y1="12" x2="19" y2="12"/>
@@ -62,15 +63,24 @@
       <span class="sidebar-label">Sair</span>
     </button>
   </nav>
+
+  <!-- Modal de criação -->
+  <CreatePost
+    v-model="showModal"
+    :user-name="currentUser?.name || currentUser?.username || ''"
+    :user-avatar="currentUser?.avatar_url || currentUser?.avatar || ''"
+    @post-created="onPostCreated"
+  />
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
+import CreatePost from 'components/CreatePost.vue';
 
 const router = useRouter();
+const showModal = ref(false);
 
-// Pega o usuário do localStorage ou deixa vazio
 const currentUser = computed(() => {
   try {
     const user = localStorage.getItem('user');
@@ -84,15 +94,14 @@ const profileLink = computed(() => {
   return currentUser.value?.username ? `/profile/${currentUser.value.username}` : '/profile';
 });
 
+function onPostCreated() {
+  window.dispatchEvent(new CustomEvent('refresh-feed'));
+}
+
 function handleLogout() {
   localStorage.removeItem('token');
   localStorage.removeItem('user');
   router.push('/login');
-}
-
-function handleCreate() {
-  // Emite evento pro pai ou navega direto
-  router.push('/posts/new');
 }
 </script>
 
@@ -131,6 +140,14 @@ function handleCreate() {
   width: 32px;
   height: 32px;
   object-fit: contain;
+}
+
+.sidebar-brand {
+  color: #f5f5f5;
+  font-size: 22px;
+  font-weight: 700;
+  font-family: 'Cinzel', serif;
+  letter-spacing: 1px;
 }
 
 .sidebar-icon {
@@ -172,7 +189,7 @@ function handleCreate() {
   margin-top: auto;
 }
 
-/* Responsivo: mobile bottom nav */
+/* Mobile */
 @media (max-width: 768px) {
   .sidebar {
     position: fixed;
@@ -196,6 +213,7 @@ function handleCreate() {
   }
 
   .sidebar-logo,
+  .sidebar-brand,
   .sidebar-label {
     display: none;
   }

@@ -17,7 +17,7 @@ export function useUserSearch() {
     error.value = null
 
     try {
-      const response = await api.get('/api/users/search', {
+      const response = await api.get('/users/search', {
         params: { q: term },
       })
       results.value = response.data.data ?? response.data

@@ -11,15 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // database/migrations/xxxx_create_posts_table.php
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
-
-            // Relacionamento com a tabela de usuários (Foreign Key)
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-
-            $table->string('image_path');
-            $table->text('caption')->nullable();
-
+            $table->text('content');
+            $table->string('image')->nullable();
             $table->timestamps();
         });
     }

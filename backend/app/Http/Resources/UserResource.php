@@ -16,7 +16,7 @@ class UserResource extends JsonResource
      */
     public function toArray($request): array
     {
-        $avatarPath = $this->avatar;
+        $avatarPath = $this->profile_photo;
         $avatarUrl = '';
 
         if ($avatarPath) {

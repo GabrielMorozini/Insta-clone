@@ -27,6 +27,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/me', [AuthController::class, 'me']);
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::post('/refresh', [AuthController::class, 'refresh']);
+        Route::get('/feed', [PostController::class, 'feed']);
+        Route::get('/users/{user}/posts', [PostController::class, 'userPosts']);
+
+        // CRUD que você já tinha
+        Route::apiResource('posts', PostController::class);
     });
 
     // Feed

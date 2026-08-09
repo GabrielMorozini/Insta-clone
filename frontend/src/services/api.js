@@ -1,13 +1,12 @@
 import axios from 'axios'
 
 const api = axios.create({
-  baseURL: 'http://localhost:8000/api', // URL do seu Laravel
+  baseURL: 'http://localhost:8000/api',
   headers: {
     'Accept': 'application/json',
   }
 })
 
-// Interceptor pra injetar o token em toda requisição
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token')
   if (token) {
@@ -15,5 +14,15 @@ api.interceptors.request.use((config) => {
   }
   return config
 })
+
+api.interceptors.response.use(
+  (response) => {
+    if (response.data && response.data.data !== undefined) {
+      response.data = response.data.data
+    }
+    return response
+  },
+  (error) => Promise.reject(error)
+)
 
 export default api

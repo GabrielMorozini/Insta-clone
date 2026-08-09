@@ -49,8 +49,7 @@ class UserController extends Controller
     /**
      * Faz o upload da foto de perfil (Avatar) do usuário logado.
      */
-    public function uploadAvatar(Request $request)
-    {
+    public function uploadAvatar(Request $request) {
         $request->validate([
             'avatar' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
@@ -58,14 +57,13 @@ class UserController extends Controller
         $user = $request->user();
 
         // Se o usuário já tiver uma foto salva no storage, apaga a antiga
-        if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
-            Storage::disk('public')->delete($user->avatar);
+        if ($user->profile_photo && Storage::disk('public')->exists($user->profile_photo)) {
+            Storage::disk('public')->delete($user->profile_photo);
         }
 
-        // Salva a nova imagem na pasta 'public/avatars'
         $path = $request->file('avatar')->store('avatars', 'public');
 
-        $user->update(['avatar' => $path]);
+        $user->update(['profile_photo' => $path]);
 
         return response()->json([
             'message'    => 'Foto de perfil atualizada!',
