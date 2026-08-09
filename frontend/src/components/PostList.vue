@@ -138,8 +138,8 @@ const toggleLike = async (post) => {
       : await postService.likePost(post.id);
 
     // Sincroniza com o valor real vindo do servidor
-    post.liked_by_me = response.liked;
-    post.likes_count = response.likes_count;
+    post.liked_by_me = response.data.liked;
+    post.likes_count = response.data.likes_count;
   } catch (err) {
     console.error('Erro ao curtir/descurtir post:', err);
     // Reverte em caso de erro

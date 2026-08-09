@@ -28,11 +28,6 @@
               <path fill="currentColor" d="M7 10l5 5 5-5z"/>
             </svg>
           </div>
-          <button class="icon-btn">
-            <svg viewBox="0 0 24 24" width="22" height="22">
-              <path fill="currentColor" d="M12 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm0 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm0 8a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/>
-            </svg>
-          </button>
         </header>
 
         <!-- Info -->
@@ -86,40 +81,16 @@
           </button>
         </div>
 
-        <!-- Destaques -->
-        <div class="highlights" v-if="highlights.length">
-          <div class="highlight" v-for="h in highlights" :key="h.id">
-            <div class="highlight-circle">
-              <img :src="h.cover" :alt="h.title" />
-            </div>
-            <span>{{ h.title }}</span>
-          </div>
-        </div>
+        
 
-        <!-- 🔥 TABS (estavam faltando no template!) -->
-        <div class="profile-tabs">
-          <button
-            v-for="tab in tabs"
-            :key="tab.name"
-            class="tab-btn"
-            :class="{ active: activeTab === tab.name }"
-            @click="activeTab = tab.name"
-          >
-            <svg viewBox="0 0 24 24" width="18" height="18">
-              <path fill="currentColor" :d="tab.icon" />
-            </svg>
-            <span class="tab-label">{{ tab.name }}</span>
-          </button>
-        </div>
-
-        <!-- 🔥 Criar Post (só no próprio perfil, aba posts) -->
+        <!-- Criar Post (só no próprio perfil, aba posts) -->
         <CreatePost
           v-if="isOwnProfile && activeTab === 'posts'"
           @post-created="onPostCreated"
         />
 
-        <!-- 🔥 CONTEÚDO DAS TABS -->
-        
+        <!-- CONTEÚDO DAS TABS -->
+
         <!-- Tab: Posts -->
         <template v-if="activeTab === 'posts'">
           <!-- Grid de posts (estilo Instagram) -->
@@ -141,7 +112,7 @@
               <div v-else class="text-only-post">
                 <p>{{ post.content }}</p>
               </div>
-              
+
               <div class="post-overlay">
                 <div class="overlay-stats">
                   <span v-if="post.likesCount">
@@ -209,6 +180,7 @@ import Navbar from '@/components/Sidebar.vue'
 import CreatePost from '@/components/CreatePost.vue'
 
 const route = useRoute()
+const apiBaseUrl = import.meta.env.VITE_API_URL
 
 const loading = ref(true)
 const error = ref(false)
@@ -232,7 +204,7 @@ const activeTab = ref('posts')
 const highlights = ref([])
 const posts = ref([])
 
-// 🔥 Paginação dos posts
+// Paginação dos posts
 const pagination = ref({
   current_page: 1,
   next_page_url: null,
@@ -281,7 +253,7 @@ async function fetchProfile() {
     isFollowing.value = data.is_following ?? false
     highlights.value = data.highlights ?? []
 
-    // 🔥 Busca posts do usuário (primeira página)
+    // Busca posts do usuário (primeira página)
     await fetchPosts(1, true)
 
   } catch (err) {
@@ -292,7 +264,7 @@ async function fetchProfile() {
   }
 }
 
-// 🔥 Busca posts paginados
+// Busca posts paginados
 async function fetchPosts(page = 1, reset = false) {
   if (!user.id) return
 
@@ -303,11 +275,12 @@ async function fetchPosts(page = 1, reset = false) {
       params: { page }
     })
 
-    const postsData = data.data || []
+    // 'data' já é o array de posts (o interceptor desembrulha response.data.data)
+    const postsData = Array.isArray(data) ? data : (data.data ?? [])
     const mapped = postsData.map((p) => ({
       id: p.id,
-      content: p.content,
-      image: p.image_url || p.image, // adapta conforme seu PostResource
+      content: p.caption,
+      image: p.image_url ? `${apiBaseUrl}${p.image_url}` : null,
       isMultiple: p.media_count > 1 || false,
       likesCount: p.likes_count ?? 0,
       commentsCount: p.comments_count ?? 0,
@@ -321,8 +294,8 @@ async function fetchPosts(page = 1, reset = false) {
     }
 
     pagination.value = {
-      current_page: data.current_page,
-      next_page_url: data.next_page_url,
+      current_page: page,
+      next_page_url: null,
     }
 
   } catch (err) {
@@ -337,15 +310,13 @@ function loadMorePosts() {
   fetchPosts(pagination.value.current_page + 1, false)
 }
 
-// 🔥 Quando cria um post novo, recarrega do início
+// Quando cria um post novo, recarrega do início
 function onPostCreated() {
   fetchPosts(1, true)
   user.postsCount++
 }
 
 function openPost(post) {
-  // Navega para detalhe do post ou abre modal
-  // Ex: router.push(`/posts/${post.id}`)
   console.log('Abrir post:', post.id)
 }
 
