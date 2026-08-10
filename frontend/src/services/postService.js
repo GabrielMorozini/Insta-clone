@@ -38,4 +38,12 @@ export const postService = {
   addComment(postId, content) {
     return api.post(`/posts/${postId}/comments`, { content });
   },
+
+  updateComment(commentId, content) {
+    return api.put(`/comments/${commentId}`, { content });
+  },
+
+  deleteComment(commentId) {
+    return api.delete(`/comments/${commentId}`);
+  },
 };

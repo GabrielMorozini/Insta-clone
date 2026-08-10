@@ -36,8 +36,26 @@
 
           <ul v-else class="comments-list">
             <li v-for="comment in commentsByPost[post.id]" :key="comment.id" class="comment-item">
-              <strong>{{ comment.user?.username || comment.user?.name }}</strong>
-              <span>{{ comment.body }}</span>
+              <template v-if="editingCommentId[comment.id]">
+                <input
+                  v-model="editCommentText[comment.id]"
+                  type="text"
+                  class="comment-edit-input"
+                  @keyup.enter="saveComment(comment)"
+                />
+                <button class="comment-action-btn" @click="saveComment(comment)">Salvar</button>
+                <button class="comment-action-btn" @click="cancelEditComment(comment)">Cancelar</button>
+              </template>
+
+              <template v-else>
+                <strong>{{ comment.user?.username || comment.user?.name }}</strong>
+                <span>{{ comment.body }}</span>
+
+                <span v-if="comment.user?.id === currentUserId" class="comment-owner-actions">
+                  <button class="comment-action-btn" @click="startEditComment(comment)">✏️</button>
+                  <button class="comment-action-btn" @click="removeComment(post, comment)">🗑️</button>
+                </span>
+              </template>
             </li>
             <li v-if="commentsByPost[post.id]?.length === 0" class="comments-empty">
               Nenhum comentário ainda.
@@ -72,6 +90,7 @@
 <script setup>
 import { ref, reactive, onMounted, watch } from 'vue';
 import { postService } from '../services/postService.js';
+import api from '../services/api.js';
 
 const props = defineProps({
   userId: { type: [String, Number], default: null }, // null = feed
@@ -83,6 +102,9 @@ const loading = ref(false);
 const page = ref(1);
 const apiBaseUrl = import.meta.env.VITE_API_URL;
 
+// Usuário logado
+const currentUserId = ref(null);
+
 // Estado de likes
 const likeLoading = reactive({});
 
@@ -92,6 +114,10 @@ const commentsByPost = reactive({});
 const commentsLoading = reactive({});
 const newComment = reactive({});
 const commentSubmitting = reactive({});
+
+// Estado de edição de comentário
+const editingCommentId = reactive({});
+const editCommentText = reactive({});
 
 const fetchPosts = async (reset = false) => {
   if (reset) {
@@ -186,6 +212,39 @@ const submitComment = async (post) => {
   }
 };
 
+const startEditComment = (comment) => {
+  editingCommentId[comment.id] = true;
+  editCommentText[comment.id] = comment.body;
+};
+
+const cancelEditComment = (comment) => {
+  editingCommentId[comment.id] = false;
+};
+
+const saveComment = async (comment) => {
+  const content = editCommentText[comment.id]?.trim();
+  if (!content) return;
+
+  try {
+    const response = await postService.updateComment(comment.id, content);
+    const updated = response.data ?? response;
+    comment.body = updated.body;
+    editingCommentId[comment.id] = false;
+  } catch (err) {
+    console.error('Erro ao editar comentário:', err);
+  }
+};
+
+const removeComment = async (post, comment) => {
+  try {
+    await postService.deleteComment(comment.id);
+    commentsByPost[post.id] = commentsByPost[post.id].filter((c) => c.id !== comment.id);
+    post.comments_count -= 1;
+  } catch (err) {
+    console.error('Erro ao apagar comentário:', err);
+  }
+};
+
 const formatDate = (date) =>
   new Date(date).toLocaleDateString('pt-BR', {
     day: '2-digit',
@@ -196,7 +255,15 @@ const formatDate = (date) =>
 
 watch(() => props.userId, () => fetchPosts(true), { immediate: false });
 
-onMounted(() => fetchPosts(true));
+onMounted(async () => {
+  try {
+    const me = await api.get('/auth/me');
+    currentUserId.value = me.data.id;
+  } catch (err) {
+    console.error('Erro ao carregar usuário atual:', err);
+  }
+  fetchPosts(true);
+});
 
 defineExpose({ refresh: () => fetchPosts(true) });
 </script>
@@ -294,10 +361,37 @@ defineExpose({ refresh: () => fetchPosts(true) });
 
 .comment-item {
   font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
 }
 
 .comment-item strong {
   margin-right: 6px;
+}
+
+.comment-owner-actions {
+  display: flex;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.comment-action-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: #657786;
+  padding: 0 4px;
+}
+
+.comment-edit-input {
+  flex: 1;
+  border: 1px solid #e1e8ed;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 0.85rem;
 }
 
 .comment-form {

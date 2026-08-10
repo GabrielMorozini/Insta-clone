@@ -29,6 +29,14 @@ class CommentService
         return $comment->load('user');
     }
 
+   public function update(string $id, string $content): Comment
+{
+    $comment = Comment::findOrFail($id);
+    $comment->update(['content' => $content]);
+
+    return $comment->load('user');
+}
+
     public function destroy(string $id): void
     {
         $comment = Comment::findOrFail($id);

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreCommentRequest;
+use App\Http\Requests\UpdateCommentRequest;
 use App\Http\Resources\CommentResource;
 use App\Models\Comment;
 use App\Services\CommentService;
@@ -30,6 +31,17 @@ class CommentController extends Controller
 
         return new CommentResource($comment);
     }
+
+    public function update(UpdateCommentRequest $request, string $id) {
+        $comment = Comment::findOrFail($id);
+
+        $this->authorize('update', $comment);
+
+        $comment = $this->commentService->update($id, $request->validated('content'));
+
+        return new CommentResource($comment);
+    }
+
 
     public function destroy(string $id)
     {
