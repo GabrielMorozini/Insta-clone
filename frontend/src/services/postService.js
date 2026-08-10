@@ -19,6 +19,14 @@ export const postService = {
     });
   },
 
+  getPost(id) {
+    return api.get(`/posts/${id}`);
+  },
+
+  updatePost(id, data) {
+    return api.put(`/posts/${id}`, data);
+  },
+
   deletePost(id) {
     return api.delete(`/posts/${id}`);
   },

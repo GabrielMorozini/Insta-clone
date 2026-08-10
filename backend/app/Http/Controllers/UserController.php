@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\PostResource;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -79,11 +80,12 @@ class UserController extends Controller
         $user = User::findOrFail($id);
 
         $posts = $user->posts()
+            ->with('user')
             ->withCount(['likes', 'comments'])
             ->latest()
             ->paginate(10);
 
-        return response()->json($posts);
+        return PostResource::collection($posts);
     }
 
     /**

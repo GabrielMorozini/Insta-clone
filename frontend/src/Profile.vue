@@ -42,11 +42,13 @@
               <strong>{{ formatNumber(user.postsCount) }}</strong>
               <span>posts</span>
             </div>
-            <div class="stat">
+            <!-- SEGUIDORES - CLICÁVEL -->
+            <div class="stat clickable" @click="openFollowers">
               <strong>{{ formatNumber(user.followers) }}</strong>
               <span>seguidores</span>
             </div>
-            <div class="stat">
+            <!-- SEGUINDO - CLICÁVEL -->
+            <div class="stat clickable" @click="openFollowing">
               <strong>{{ formatNumber(user.following) }}</strong>
               <span>seguindo</span>
             </div>
@@ -81,8 +83,6 @@
           </button>
         </div>
 
-        
-
         <!-- Criar Post (só no próprio perfil, aba posts) -->
         <CreatePost
           v-if="isOwnProfile && activeTab === 'posts'"
@@ -90,10 +90,7 @@
         />
 
         <!-- CONTEÚDO DAS TABS -->
-
-        <!-- Tab: Posts -->
         <template v-if="activeTab === 'posts'">
-          <!-- Grid de posts (estilo Instagram) -->
           <div class="posts-grid" v-if="posts.length">
             <div
               class="post-thumb"
@@ -101,14 +98,12 @@
               :key="post.id"
               @click="openPost(post)"
             >
-              <!-- Post com imagem -->
               <img
                 v-if="post.image"
                 :src="post.image"
                 :alt="`post ${post.id}`"
                 loading="lazy"
               />
-              <!-- Post só texto (quando não tem imagem) -->
               <div v-else class="text-only-post">
                 <p>{{ post.content }}</p>
               </div>
@@ -141,7 +136,6 @@
             </div>
           </div>
 
-          <!-- Load more -->
           <div v-if="pagination.next_page_url" class="load-more-wrapper">
             <button
               class="btn load-more-btn"
@@ -158,17 +152,32 @@
           </div>
         </template>
 
-        <!-- Tab: Reels -->
         <div class="empty-state" v-else-if="activeTab === 'reels'">
           <p>Em breve.</p>
         </div>
 
-        <!-- Tab: Tagged -->
         <div class="empty-state" v-else-if="activeTab === 'tagged'">
           <p>Fotos em que aparece.</p>
         </div>
       </template>
     </div>
+
+    <!-- MODAL DE SEGUIDORES/SEGUINDO -->
+    <FollowersModal
+      v-model="showFollowModal"
+      :user-id="user.id"
+      :username="user.username"
+      :is-own-profile="isOwnProfile"
+      :initial-tab="modalInitialTab"
+      @follow-change="onFollowChange"
+    />
+    <PostModal
+      v-model="showPostModal"
+      :post-id="selectedPostId"
+      :is-owner="isOwnProfile"
+      @updated="onPostUpdated"
+      @deleted="onPostDeleted"
+    />
   </div>
 </template>
 
@@ -178,6 +187,8 @@ import { useRoute } from 'vue-router'
 import api from '@/services/api'
 import Navbar from '@/components/Sidebar.vue'
 import CreatePost from '@/components/CreatePost.vue'
+import FollowersModal from '@/components/FollowersModal.vue'
+import PostModal from '@/components/PostModal.vue'
 
 const route = useRoute()
 const apiBaseUrl = import.meta.env.VITE_API_URL
@@ -204,7 +215,28 @@ const activeTab = ref('posts')
 const highlights = ref([])
 const posts = ref([])
 
-// Paginação dos posts
+// ===== MODAL =====
+const showFollowModal = ref(false)
+const modalInitialTab = ref('followers')
+
+function openFollowers() {
+  modalInitialTab.value = 'followers'
+  showFollowModal.value = true
+}
+
+function openFollowing() {
+  modalInitialTab.value = 'following'
+  showFollowModal.value = true
+}
+
+function onFollowChange({ following }) {
+  // Atualiza contador de seguindo se for o próprio perfil
+  if (isOwnProfile.value) {
+    user.following += following ? 1 : -1
+  }
+}
+// =================
+
 const pagination = ref({
   current_page: 1,
   next_page_url: null,
@@ -253,7 +285,6 @@ async function fetchProfile() {
     isFollowing.value = data.is_following ?? false
     highlights.value = data.highlights ?? []
 
-    // Busca posts do usuário (primeira página)
     await fetchPosts(1, true)
 
   } catch (err) {
@@ -264,7 +295,6 @@ async function fetchProfile() {
   }
 }
 
-// Busca posts paginados
 async function fetchPosts(page = 1, reset = false) {
   if (!user.id) return
 
@@ -275,7 +305,8 @@ async function fetchPosts(page = 1, reset = false) {
       params: { page }
     })
 
-    // 'data' já é o array de posts (o interceptor desembrulha response.data.data)
+    console.log('RESPOSTA CRUA DOS POSTS:', JSON.stringify(data, null, 2))
+
     const postsData = Array.isArray(data) ? data : (data.data ?? [])
     const mapped = postsData.map((p) => ({
       id: p.id,
@@ -310,14 +341,29 @@ function loadMorePosts() {
   fetchPosts(pagination.value.current_page + 1, false)
 }
 
-// Quando cria um post novo, recarrega do início
 function onPostCreated() {
   fetchPosts(1, true)
   user.postsCount++
 }
 
+const selectedPostId = ref(null)
+const showPostModal = ref(false)
+
 function openPost(post) {
-  console.log('Abrir post:', post.id)
+  selectedPostId.value = post.id
+  showPostModal.value = true
+}
+
+function onPostUpdated(updatedPost) {
+  const idx = posts.value.findIndex((p) => p.id === updatedPost.id)
+  if (idx !== -1) {
+    posts.value[idx].content = updatedPost.caption
+  }
+}
+
+function onPostDeleted(postId) {
+  posts.value = posts.value.filter((p) => p.id !== postId)
+  user.postsCount = Math.max(0, user.postsCount - 1)
 }
 
 async function toggleFollow() {
