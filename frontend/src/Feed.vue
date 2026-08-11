@@ -2,10 +2,11 @@
   <div class="tavern-layout">
     <Navbar />
     <main class="guild-feed">
+      <ExploreSearch />
       <section class="crest-rail" aria-label="Brasões da guilda">
         <button class="crest-item crest-item--self" @click="handleAddCrest">
           <span class="crest-ring crest-ring--empty">
-            <img :src="currentUser?.profile_photo || defaultAvatar" alt="" />
+            <img :src="currentUser?.avatar_url || defaultAvatar" alt="" />
             <span class="crest-plus">+</span>
           </span>
           <span class="crest-name">Seu brasão</span>
@@ -28,7 +29,7 @@
 
         <article v-for="post in posts" :key="post.id" class="post-card">
           <header class="post-header">
-            <img class="post-avatar" :src="post.user.profile_photo || defaultAvatar" alt="" />
+            <img class="post-avatar" :src="post.user.avatar_url || defaultAvatar" alt="" />
             <div class="post-header-info">
               <RouterLink :to="`/profile/${post.user.username}`" class="post-username">
                 {{ post.user.username }}
@@ -39,7 +40,7 @@
           </header>
 
           <div class="post-image-wrap">
-            <img :src="post.image" :alt="post.caption" class="post-image" />
+              <img :src="post.image" :alt="post.caption" class="post-image" />
           </div>
 
           <div class="post-actions">
@@ -79,7 +80,7 @@
 
     <aside class="guild-suggestions">
       <div class="current-user-card" v-if="currentUser">
-        <img :src="currentUser.profile_photo || defaultAvatar" alt="" />
+        <img :src="person.avatar_url || defaultAvatar" alt="" />
         <div>
           <strong>{{ currentUser.username }}</strong>
           <span>{{ currentUser.name }}</span>
@@ -92,7 +93,7 @@
 
       <ul class="suggestions-list">
         <li v-for="person in suggestions" :key="person.id" class="suggestion-item">
-          <img :src="person.profile_photo || defaultAvatar" alt="" />
+         <img :src="person.avatar_url || defaultAvatar" alt="" />
           <div class="suggestion-info">
             <RouterLink :to="`/profile/${person.username}`">
               {{ person.username }}
@@ -120,6 +121,7 @@ import { useFeed } from './js/feed.js';
 import Navbar from '@/components/Sidebar.vue'
 import PostList from '@/components/PostList.vue';
 import CreatePost from '@/components/CreatePost.vue';
+import ExploreSearch from '@/components/Explore.vue';
 
 const defaultAvatar = '/icon-profile.png';
 

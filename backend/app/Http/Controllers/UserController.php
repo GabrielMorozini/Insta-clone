@@ -6,8 +6,11 @@ use App\Http\Resources\PostResource;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class UserController extends Controller
 {
@@ -69,6 +72,56 @@ class UserController extends Controller
         return response()->json([
             'message'    => 'Foto de perfil atualizada!',
             'avatar_url' => asset('storage/' . $path)
+        ]);
+    }
+
+    /**
+     * Deleta permanentemente a conta do usuário logado.
+     * Exige a senha atual como confirmação por segurança.
+     */
+    public function deleteMe(Request $request)
+    {
+        $user = $request->user();
+
+        $request->validate([
+            'password' => 'required|string',
+        ]);
+
+        // Confirma a senha antes de deletar qualquer coisa
+        if (!Hash::check($request->password, $user->password)) {
+            throw ValidationException::withMessages([
+                'password' => ['Senha incorreta.'],
+            ]);
+        }
+
+        DB::transaction(function () use ($user) {
+            // Apaga o avatar do storage, se existir
+            if ($user->profile_photo && Storage::disk('public')->exists($user->profile_photo)) {
+                Storage::disk('public')->delete($user->profile_photo);
+            }
+
+            // Apaga imagens dos posts do usuário antes de deletar os posts
+            foreach ($user->posts as $post) {
+                if ($post->image_path && Storage::disk('public')->exists($post->image_path)) {
+                    Storage::disk('public')->delete($post->image_path);
+                }
+            }
+
+            // Remove relacionamentos manualmente para garantir consistência
+            // mesmo que as migrations não tenham onDelete('cascade')
+            $user->posts()->delete();       // posts (e seus likes/comments, se tiver cascade no BD)
+            $user->following()->detach();   // quem ele segue
+            $user->followers()->detach();   // quem segue ele
+
+            // Revoga todos os tokens de API (Sanctum)
+            $user->tokens()->delete();
+
+            // Deleta o usuário
+            $user->delete();
+        });
+
+        return response()->json([
+            'message' => 'Sua conta foi deletada permanentemente. Até a próxima, aventureiro.'
         ]);
     }
 

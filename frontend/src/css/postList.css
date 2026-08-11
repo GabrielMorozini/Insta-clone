@@ -1,0 +1,175 @@
+.post-list {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.post-card {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  border-bottom: 1px solid #e1e8ed;
+}
+
+.avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.post-body {
+  flex: 1;
+}
+
+.post-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.date {
+  color: #657786;
+  font-size: 0.85rem;
+}
+
+.post-image {
+  max-width: 100%;
+  border-radius: 12px;
+  margin-top: 8px;
+}
+
+.post-actions {
+  display: flex;
+  gap: 16px;
+  margin-top: 10px;
+}
+
+.like-btn,
+.comment-toggle-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #657786;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.like-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.like-btn--liked {
+  color: #e0245e;
+  font-weight: 600;
+}
+
+.comments-section {
+  margin-top: 12px;
+  border-top: 1px solid #e1e8ed;
+  padding-top: 10px;
+}
+
+.comments-loading,
+.comments-empty {
+  color: #657786;
+  font-size: 0.85rem;
+  padding: 4px 0;
+}
+
+.comments-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.comment-item {
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.comment-item strong {
+  margin-right: 6px;
+}
+
+.comment-owner-actions {
+  display: flex;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.comment-action-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: #657786;
+  padding: 0 4px;
+}
+
+.comment-edit-input {
+  flex: 1;
+  border: 1px solid #e1e8ed;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 0.85rem;
+}
+
+.comment-form {
+  display: flex;
+  gap: 8px;
+}
+
+.comment-form input {
+  flex: 1;
+  border: 1px solid #e1e8ed;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 0.9rem;
+}
+
+.comment-form button {
+  background: #1da1f2;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.comment-form button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.load-more {
+  width: 100%;
+  padding: 12px;
+  margin-top: 8px;
+  background: #1da1f2;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.load-more:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.empty,
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: #657786;
+}

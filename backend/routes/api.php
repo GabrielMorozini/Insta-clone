@@ -45,6 +45,7 @@ Route::middleware('auth:sanctum')->group(function () {
         // Perfil Próprio
         Route::put('/me', [UserController::class, 'updateMe']);
         Route::post('/me/avatar', [UserController::class, 'uploadAvatar']);
+        Route::delete('/me', [UserController::class, 'deleteMe']); // <-- NOVA ROTA: deletar conta
 
         // Ações específicas (antes do /{username} para evitar conflito)
         Route::get('/{id}/posts', [UserController::class, 'posts']);

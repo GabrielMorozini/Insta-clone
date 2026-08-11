@@ -11,11 +11,6 @@
         <span>Home</span>
       </RouterLink>
 
-      <RouterLink to="/explore" class="nav-item" active-class="is-active">
-        <img src="/icon-search.png" alt="Explorar" class="nav-icon" />
-        <span>Explorar</span>
-      </RouterLink>
-
       <button class="nav-item nav-item--btn" @click="handleCreatePost">
         <img src="/icon-add.png" alt="Nova Postagem" class="nav-icon" />
         <span>Nova Postagem</span>

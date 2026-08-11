@@ -94,8 +94,52 @@
               <span class="readonly-value">{{ joinedAt || '—' }}</span>
             </div>
           </section>
+
+          <section class="danger-zone">
+            <h2 class="danger-title">Zona Sombria</h2>
+            <p class="danger-text">
+              Deletar sua conta é permanente. Todos os seus posts, curtidas, comentários
+              e conexões no reino serão apagados para sempre.
+            </p>
+            <button class="danger-btn" @click="openDeleteModal">
+              Deletar Minha Conta
+            </button>
+          </section>
         </div>
       </template>
+    </div>
+
+    <!-- Modal de confirmação de deletar conta -->
+    <div v-if="showDeleteModal" class="modal-overlay" @click.self="closeDeleteModal">
+      <div class="modal-box">
+        <h2 class="modal-title">⚔️ Deixar a Guilda para sempre?</h2>
+        <p class="modal-text">
+          Esta ação é <strong>irreversível</strong>. Todos os seus posts, curtidas,
+          comentários e conexões serão apagados permanentemente do reino.
+        </p>
+
+        <label class="modal-label" for="confirm-password">Digite sua senha para confirmar</label>
+        <input
+          id="confirm-password"
+          v-model="deletePassword"
+          type="password"
+          class="modal-input"
+          placeholder="Sua senha"
+          :disabled="isDeletingAccount"
+          @keyup.enter="confirmDeleteAccount"
+        />
+
+        <p v-if="deleteError" class="modal-error">{{ deleteError }}</p>
+
+        <div class="modal-actions">
+          <button class="btn-cancel" :disabled="isDeletingAccount" @click="closeDeleteModal">
+            Cancelar
+          </button>
+          <button class="btn-danger" :disabled="isDeletingAccount" @click="confirmDeleteAccount">
+            {{ isDeletingAccount ? 'Deletando...' : 'Deletar minha conta' }}
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -118,8 +162,18 @@ import {
   handleAvatarChange,
   fetchUserData
 } from '@/js/editProfile.js'
+import {
+  showDeleteModal,
+  deletePassword,
+  isDeletingAccount,
+  deleteError,
+  openDeleteModal,
+  closeDeleteModal,
+  confirmDeleteAccount
+} from '@/js/deleteAccount.js'
 
 onMounted(fetchUserData)
 </script>
 
-<style scoped src="./css/editProfile.css"></style>
+<style scoped src="@/css/editProfile.css"></style>
+<style scoped src="@/css/deleteAccount.css"></style>
