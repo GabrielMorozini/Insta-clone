@@ -76,4 +76,4 @@ const {
 } = usePostModal(props, emit);
 </script>
 
-<style scoped src="./css/postModal.css"></style>
+<style scoped src="@/css/postModal.css"></style>

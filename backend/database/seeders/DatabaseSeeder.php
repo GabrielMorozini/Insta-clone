@@ -10,10 +10,10 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             UserSeeder::class,
+            FollowSeeder::class,
             PostSeeder::class,
             CommentSeeder::class,
-            FollowSeeder::class,
-            LikeSeeder::class
+            LikeSeeder::class,
         ]);
     }
 }

@@ -1,5 +1,5 @@
 import { ref, watch } from 'vue';
-import { postService } from '../../services/postService.js';
+import { postService } from '../services/postService.js';
 
 export function usePostModal(props, emit) {
   const apiBaseUrl = import.meta.env.VITE_API_URL;
