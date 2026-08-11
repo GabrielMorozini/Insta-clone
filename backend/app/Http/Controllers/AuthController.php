@@ -8,12 +8,32 @@ use App\Http\Resources\UserResource;
 use App\Services\AuthService;
 use App\Models\User;
 use Illuminate\Http\Request;
+use OpenApi\Attributes as OA;
 
 class AuthController extends Controller {
     public function __construct(private AuthService $auth) {
 
     }
 
+    #[OA\Post(
+        path: "/auth/login",
+        summary: "Login",
+        tags: ["Auth"],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ["login", "password"],
+                properties: [
+                    new OA\Property(property: "login", type: "string", example: "maria.silva"),
+                    new OA\Property(property: "password", type: "string", example: "senha123"),
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(response: 200, description: "Login realizado com sucesso"),
+            new OA\Response(response: 422, description: "Erro de validação"),
+        ]
+    )]
     public function login(LoginValidateRequest $request)
     {
         $user = $this->auth->login($request->validated());
@@ -44,9 +64,6 @@ class AuthController extends Controller {
         return new UserResource($user);
     }
 
-    /**
-     * Método privado para evitar repetição no Login e Register.
-     */
     private function respondWithToken(User $user)
     {
         $token = $this->auth->createToken($user);

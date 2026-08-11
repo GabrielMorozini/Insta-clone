@@ -50,7 +50,7 @@
 </template>
 
 <script setup>
-import { usePostModal } from './js/postModal.js';
+import { usePostModal } from '../js/postModal.js';
 
 const props = defineProps({
   modelValue: { type: Boolean, default: false },
