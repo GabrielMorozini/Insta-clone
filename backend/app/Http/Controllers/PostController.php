@@ -16,7 +16,6 @@ class PostController extends Controller
 
     public function __construct(private PostService $postService) {}
 
-    // 🔥 NOVO: Feed global
     public function feed(Request $request)
     {
         $posts = $this->postService->feed($request->query('per_page', 10));
@@ -24,7 +23,6 @@ class PostController extends Controller
         return PostResource::collection($posts);
     }
 
-    // 🔥 NOVO: Posts de um usuário específico (perfil)
     public function userPosts(Request $request, string $userId)
     {
         $posts = $this->postService->userPosts(

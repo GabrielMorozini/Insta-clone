@@ -60,6 +60,8 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: "message", type: "string"),
     ]
 )]
+
+
 class Schemas
 {
     // Classe vazia — só existe para carregar as anotações acima.
